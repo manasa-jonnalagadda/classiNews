@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ClassiNews – Intelligent News Classifier</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #e0edff 0, #f4f5fb 40%, #f9fafb 100%);
+            color: #0f172a;
+        }
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+        .card {
+            width: 100%;
+            max-width: 950px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px 32px 32px;
+            box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+            display: grid;
+            grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+            gap: 32px;
+        }
+        @media (max-width: 850px) {
+            .card {
+                grid-template-columns: 1fr;
+            }
+        }
+        .title {
+            font-size: 32px;
+            font-weight: 750;
+            letter-spacing: 0.02em;
+            margin: 0 0 6px 0;
+        }
+        .accent {
+            color: #2563eb;
+        }
+        .subtitle {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+        .pill {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 170px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #cbd5f5;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            transition: all 0.16s ease;
+        }
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px #2563eb20;
+        }
+        button {
+            margin-top: 14px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #22c55e);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 650;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+        }
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 15px 28px rgba(37, 99, 235, 0.28);
+            filter: brightness(1.03);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 12px rgba(15, 23, 42, 0.20);
+        }
+        .right-panel {
+            border-left: 1px dashed #e2e8f0;
+            padding-left: 24px;
+        }
+        @media (max-width: 850px) {
+            .right-panel {
+                border-left: none;
+                border-top: 1px dashed #e2e8f0;
+                padding-left: 0;
+                padding-top: 20px;
+            }
+        }
+        .result-header {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .result-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-weight: 650;
+            text-transform: capitalize;
+            margin-bottom: 8px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+        }
+        .muted {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .empty-state {
+            font-size: 13px;
+            color: #94a3b8;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+        .category-explain {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #f8fafc;
+            font-size: 13px;
+            color: #475569;
+        }
+        .cats-grid {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .cat-chip {
+            font-size: 12px;
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .cat-chip span {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="card">
+        <!-- LEFT: input -->
+        <div>
+            <h1 class="title"><span class="accent">Classi</span>News</h1>
+            <p class="subtitle">Intelligent News Article Categorization using TF-IDF and Multinomial Naive Bayes.</p>
+
+            <div class="pill-row">
+                <div class="pill">Politics</div>
+                <div class="pill">Sports</div>
+                <div class="pill">Entertainment</div>
+                <div class="pill">Technology</div>
+                <div class="pill">Business</div>
+            </div>
+
+            <!-- 🔥 IMPORTANT: action=/classify -->
+            <form method="POST" action="/classify">
+                <label for="news_text">Enter news article text:</label>
+                <textarea id="news_text" name="news_text"
+                          placeholder="Type or paste any news article here...">{{ user_text }}</textarea>
+                <button type="submit">Predict Category</button>
+            </form>
+        </div>
+
+        <!-- RIGHT: output / info -->
+        <div class="right-panel">
+            <div class="result-header">Prediction</div>
+
+            {% if prediction %}
+                <div class="result-pill">
+                    <div class="dot"></div>
+                    {{ prediction }}
+                </div>
+                <div class="muted">Model prediction for the latest input.</div>
+
+                <div class="category-explain">
+                    {% if prediction == "politics" %}
+                        This article is related to <b>politics</b> – government decisions, elections, public policy or international relations.
+                    {% elif prediction == "sports" %}
+                        This article is about <b>sports</b> – matches, players, tournaments, scores or athletic events.
+                    {% elif prediction == "entertainment" %}
+                        This article falls under <b>entertainment</b> – movies, music, celebrities, TV shows or events.
+                    {% elif prediction == "technology" %}
+                        This article is categorized as <b>technology</b> – software, gadgets, AI, innovation or digital platforms.
+                    {% elif prediction == "business" %}
+                        This article is related to <b>business</b> – markets, companies, finance, trade or economy.
+                    {% else %}
+                        The article is mapped to the closest learnt category by the model.
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    No prediction yet. Paste a news snippet on the left and click <b>Predict Category</b> to see how the
+                    model classifies it into Politics, Sports, Entertainment, Technology or Business.
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
